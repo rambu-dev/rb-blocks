@@ -1,0 +1,13 @@
+{
+    "name": "rb-gutenberg-blocks",
+    "version": "1.0.0",
+    "license": "GPL-2.0-or-later",
+    "devDependencies": {
+        "@wordpress/components": "^25.10.0",
+        "@wordpress/scripts": "^26.15.0"
+    },
+    "scripts": {
+        "start": "wp-scripts start",
+        "build": "wp-scripts build"
+    }
+}

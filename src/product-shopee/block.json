@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "rb-blocks/product-shopee",
+    "version": "0.1.0",
+    "title": "RB Product Shopee",
+    "category": "common",
+    "icon": "smiley",
+    "description": "A block to quick share product shopee link.",
+    "supports": {
+      "html": true
+    },
+    "textdomain": "rb-blocks",
+    "editorScript": "file:./index.js"
+}
