@@ -25,17 +25,48 @@ const Edit = ({ attributes, setAttributes}) => {
         {!!value && 
 					<InnerBlocks orientation="horizontal" template={[
 						['core/group', {
-							layout: { type: 'flex', flexWrap: 'nowrap' }
+							layout: { 
+								type: 'flex', 
+								flexWrap: 'nowrap',
+								allowSizingOnChildren: true
+							},
+							style: {
+								spacing: {
+									padding: {
+										top: '12px',
+										bottom: '12px',
+										left: '12px',
+										right: '12px'
+									}
+								},
+								border: {
+									radius: '12px'
+								}
+							}
 						}, [
 							['core/image' , {
 								url: 'http://placehold.it/80x100?text=hello',
 								width: '80px',
 								href: value,
 								linkTarget: "_blank",
-								rel: "noreferrer"
+								rel: "noreferrer",
+								style: {
+									border: {
+										radius: '12px'
+									}
+								}
 							}],
 							['core/group', {
-								layout: { type: 'flex', orientation: 'vertical' }
+								layout: { 
+									type: 'flex', 
+									orientation: 'vertical',
+									allowSizingOnChildren: true
+								},
+								style: {
+									layout: {
+										selfStretch: "fill"
+									},
+								}
 							}, [
 								['core/paragraph', { 
 									content: "<a href='"+value+"'>Hello world</a>", 
