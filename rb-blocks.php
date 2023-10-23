@@ -11,22 +11,28 @@
 defined( 'ABSPATH' ) || exit;
 
 function rb_guternberg_blocks() {
+    $plugin_dir_path = plugin_dir_path(__FILE__);
     $plugins = [
         'hello-world',
-        'product-shopee'
+        'shopee-link'
     ];
     foreach( $plugins as $plugin ) {
         register_block_type_from_metadata(
             plugin_dir_path(__FILE__) . 'build/' . $plugin,
             [
-                'render_callback' => 'rb_' . str_replace('-','_',$plugin) . '_callback',
+                'render_callback' => function ($attributes, $content) use ($plugin_dir_path, $plugin) {
+                    $template = $plugin_dir_path . 'src/' . $plugin . '/template.php';
+                    if( file_exists($template) )  {
+                        ob_start();
+                        include_once $template;
+                        $html = ob_get_contents();
+                        ob_end_clean();
+
+                        return $html;
+                    }
+                },
             ]
         );
     }
 }
 add_action( 'init', 'rb_guternberg_blocks' );
-
-
-function rb_product_shopee_callback ($attributes, $content) {
-    return "<p>Hello world</p>";
-}
