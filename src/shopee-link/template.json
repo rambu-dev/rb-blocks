@@ -1,0 +1,67 @@
+[
+    ["core/group", {
+        "layout": { 
+            "type": "flex",
+            "allowSizingOnChildren": true
+        },
+        "style": {
+            "spacing": {
+                "padding": {
+                    "top": "12px",
+                    "bottom": "12px",
+                    "left": "12px",
+                    "right": "12px"
+                }
+            },
+            "border": {
+                "radius": "12px"
+            }
+        }
+    }, [
+        ["core/image" , {
+            "url": "{{image}}",
+            "width": "80px",
+            "href": "{{link}}",
+            "linkTarget": "_blank",
+            "rel": "noreferrer",
+            "style": {
+                "border": {
+                    "radius": "12px"
+                }
+            },
+            "lock": {
+                "remove": true 
+            }
+        }],
+        ["core/group", {
+            "layout": { 
+                "type": "flex", 
+                "orientation": "vertical",
+                "justifyContent": "stretch",
+                "flexWrap": "wrap",
+                "allowSizingOnChildren": true
+            },
+            "style": {
+                "layout": {
+                    "selfStretch": "fill"
+                }
+            }
+        }, [
+            ["core/paragraph", { 
+                "content": "<a href=\"{{link}}\" target=\"_blank\" rel=\"noreferrer\" >{{message}}</a>",
+                "align": "left" 
+            }],
+            ["core/buttons", {
+                "layout": {
+                    "type": "flex",
+                    "justifyContent": "right"
+                }
+            }, [
+                ["core/button", { 
+                    "text": "xem",
+                    "url": "{{link}}"
+                }]
+            ]]
+        ]]
+    ]]
+]
