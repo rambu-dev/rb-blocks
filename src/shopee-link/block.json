@@ -13,7 +13,15 @@
 	"attributes": {
 		"url": {
 			"type": "string",
-			"selector": "shopee-link"
+			"selector": "product-link"
+		},
+		"image": {
+			"type": "string",
+			"selector": "product-thumbnail"
+		},
+		"message": {
+			"type": "string",
+			"selector": "product-description"
 		}
 	},
 	"textdomain": "rb-blocks",

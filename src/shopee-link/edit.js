@@ -37,15 +37,8 @@ export const getTemplate = ({ image = '', link = '', message = ''}) => {
 
 const Edit = ({ image, clientId, attributes, setAttributes}) => {
 	const { replaceInnerBlocks } = useDispatch( store );
-
 	const blockProps = useBlockProps();
-	const innerBlocksProps = useInnerBlocksProps(blockProps, {
-		template: getTemplate({
-			image: attributes.image || "http://placehold.it/80x120?text=img",
-			link: attributes.url,
-			message: attributes.message || 'Your message go here'
-		})
-	})
+	const innerBlocksProps = useInnerBlocksProps(blockProps)
 
 	const updateBlockAttrs = ({ url }) => {
 		let link = '';
@@ -63,14 +56,17 @@ const Edit = ({ image, clientId, attributes, setAttributes}) => {
 		}, 600);
 	}
 
+	const product_image = useMemo(() => image || attributes.image || 'http://placehold.it/80x100?text=img', [image, attributes.image])
+
 	useEffect(() => {
+		setAttributes({ image: image });
 		const template = getTemplate({
-			image: image,
+			image: product_image,
 			link: attributes.url,
 			message: attributes.message || 'Your message go here'
 		});
 		replaceInnerBlocks(clientId, createBlocksFromInnerBlocksTemplate(template));
-	}, [attributes.url, attributes.message, image])
+	}, [attributes.url, setAttributes, product_image])
 
 	return (
 		<>
