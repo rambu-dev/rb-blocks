@@ -16,7 +16,8 @@
             "border": {
                 "radius": "12px"
             }
-        }
+        },
+        "lock": "all"
     }, [
         ["core/image" , {
             "url": "{{image}}",
@@ -28,9 +29,6 @@
                 "border": {
                     "radius": "12px"
                 }
-            },
-            "lock": {
-                "remove": true 
             }
         }],
         ["core/group", {

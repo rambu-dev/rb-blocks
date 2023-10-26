@@ -1,25 +1,27 @@
 import {
-	CheckboxControl,
-	RadioControl,
-	TextControl,
-	ToggleControl,
-	SelectControl,
 	PanelBody,
 } from '@wordpress/components';
+import { 
+	withSelect,
+	useDispatch 
+} from '@wordpress/data';
 
 import { 
 	InnerBlocks, 
 	InspectorControls,
 	useBlockProps,
-	useInnerBlocksProps
+	useInnerBlocksProps,
+	store
 } from '@wordpress/block-editor';
+import { createBlocksFromInnerBlocksTemplate } from '@wordpress/blocks';
+ 
 import { 
 	__experimentalInputControl as InputControl,
 	__experimentalVStack as VStack,
 	__experimentalHStack as HStack,
 	__experimentalText as Text,
 } from '@wordpress/components';
-import { useState } from '@wordpress/element';
+import { useEffect, useMemo, useState } from '@wordpress/element';
 
 import defaultTemplate from './template.json';
 
@@ -33,27 +35,42 @@ export const getTemplate = ({ image = '', link = '', message = ''}) => {
 	return JSON.parse(templateString);
 }
 
-const CustomBlocks = ({ template }) => {
-	console.log('rerender');
-	return (
-		<InnerBlocks template={template} />
-	)
-}
+const Edit = ({ image, clientId, attributes, setAttributes}) => {
+	const { replaceInnerBlocks } = useDispatch( store );
 
-const Edit = ({ attributes, setAttributes}) => {
-  const [value, setValue] = useState( attributes.url || '' );
+	const blockProps = useBlockProps();
+	const innerBlocksProps = useInnerBlocksProps(blockProps, {
+		template: getTemplate({
+			image: attributes.image || "http://placehold.it/80x120?text=img",
+			link: attributes.url,
+			message: attributes.message || 'Your message go here'
+		})
+	})
 
-
-	const changeHandle = (newValue = '') => {
-		setValue(newValue || '');
-		setAttributes({ url : newValue });
+	const updateBlockAttrs = ({ url }) => {
+		let link = '';
+		var isValid = url.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+		if ( !!url && isValid !== null ) {
+			link = url;
+		}
+		setAttributes({ url: link });
 	}
-	
-	const template = getTemplate({
-		image: "http://placehold.it/80x120?text=img",
-		link: value,
-		message: "hello world"
-	});
+	const changeHandle = (newValue = '') => {
+		if ( !!window.updateBlockTimeout ) clearTimeout(window.updateBlockTimeout)
+		window.updateBlockTimeout = setTimeout(() => {
+			updateBlockAttrs({ url: newValue });
+			window.updateBlockTimeout = false;
+		}, 600);
+	}
+
+	useEffect(() => {
+		const template = getTemplate({
+			image: image,
+			link: attributes.url,
+			message: attributes.message || 'Your message go here'
+		});
+		replaceInnerBlocks(clientId, createBlocksFromInnerBlocksTemplate(template));
+	}, [attributes.url, attributes.message, image])
 
 	return (
 		<>
@@ -61,17 +78,33 @@ const Edit = ({ attributes, setAttributes}) => {
 					<PanelBody title={ 'Settings' }>
 						<InputControl
 							label={"Product Link"}
-							value={ value }
+							value={attributes.url}
 							onChange={changeHandle}
 						/>
 					</PanelBody>
 					
 				</InspectorControls>
-				{!!value && 
-					<CustomBlocks template={template} />
+				{!!attributes.url && 
+					<div {...blockProps}>
+						<div {...innerBlocksProps} />
+					</div>	
 				}
 		</>
 	)
 }
 
-export default Edit;
+export default withSelect( ( select, blockData ) => {
+	const blocks = select( 'core/block-editor' ).getBlocks( blockData.clientId );
+	let image = '';
+	if ( blocks.length > 0 ) {
+		// Just get innerBlock data
+		blocks[0].innerBlocks.forEach(block => {
+			if ( block.name === 'core/image') {
+				image = block.attributes.url
+			}
+		})
+	}
+	return {
+		image: image
+	};
+} )(Edit);
