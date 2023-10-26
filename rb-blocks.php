@@ -24,10 +24,10 @@ function rb_guternberg_blocks() {
                     $template = $plugin_dir_path . 'src/' . $plugin . '/template.php';
                     if( file_exists($template) )  {
                         ob_start();
-                        include_once $template;
+                        load_template($template, false, $attributes);
                         $html = ob_get_contents();
                         ob_end_clean();
-
+                        
                         return do_blocks($html);
                     }
                 },
