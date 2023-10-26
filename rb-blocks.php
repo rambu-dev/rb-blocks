@@ -20,7 +20,7 @@ function rb_guternberg_blocks() {
         register_block_type_from_metadata(
             plugin_dir_path(__FILE__) . 'build/' . $plugin,
             [
-                'render_callback' => function ($attributes, $content) use ($plugin_dir_path, $plugin) {
+                'render_callback' => function ($attributes, $content, $block) use ($plugin_dir_path, $plugin) {
                     $template = $plugin_dir_path . 'src/' . $plugin . '/template.php';
                     if( file_exists($template) )  {
                         ob_start();
@@ -28,7 +28,7 @@ function rb_guternberg_blocks() {
                         $html = ob_get_contents();
                         ob_end_clean();
 
-                        return $html;
+                        return do_blocks($html);
                     }
                 },
             ]
