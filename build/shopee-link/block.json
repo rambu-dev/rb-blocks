@@ -1,0 +1,29 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "rb-blocks/shopee-link",
+  "version": "0.1.0",
+  "title": "RB Embed Shopee Link",
+  "category": "common",
+  "icon": "smiley",
+  "description": "A block to quick share shopee link with auto generate thumbnail and description.",
+  "supports": {
+    "html": true
+  },
+  "attributes": {
+    "url": {
+      "type": "string",
+      "selector": "product-link"
+    },
+    "image": {
+      "type": "string",
+      "selector": "product-thumbnail"
+    },
+    "message": {
+      "type": "string",
+      "selector": "product-description"
+    }
+  },
+  "textdomain": "rb-blocks",
+  "editorScript": "file:./index.js"
+}
