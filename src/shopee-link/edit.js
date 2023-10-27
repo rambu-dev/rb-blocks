@@ -21,7 +21,7 @@ import {
 	__experimentalHStack as HStack,
 	__experimentalText as Text,
 } from '@wordpress/components';
-import { useEffect, useMemo, useState } from '@wordpress/element';
+import { useCallback, useEffect, useMemo, useState } from '@wordpress/element';
 
 import defaultTemplate from './template.json';
 
@@ -35,7 +35,7 @@ export const getTemplate = ({ image = '', link = '', message = ''}) => {
 	return JSON.parse(templateString);
 }
 
-const Edit = ({ image, clientId, attributes, setAttributes}) => {
+const Edit = ({ image, message, clientId, attributes, setAttributes}) => {
 	const { replaceInnerBlocks } = useDispatch( store );
 	const blockProps = useBlockProps();
 	const innerBlocksProps = useInnerBlocksProps(blockProps)
@@ -55,18 +55,26 @@ const Edit = ({ image, clientId, attributes, setAttributes}) => {
 			window.updateBlockTimeout = false;
 		}, 600);
 	}
-
-	const product_image = useMemo(() => image || attributes.image || 'http://placehold.it/80x100?text=img', [image, attributes.image])
-
-	useEffect(() => {
-		setAttributes({ image: image });
-		const template = getTemplate({
-			image: product_image,
+	
+	const template = useMemo(() => {
+		setAttributes({
+			image,
+			message
+		})
+		return getTemplate({
+			image: image || attributes.image || 'http://placehold.it/80x100?text=img',
 			link: attributes.url,
-			message: attributes.message || 'Your message go here'
-		});
-		replaceInnerBlocks(clientId, createBlocksFromInnerBlocksTemplate(template));
-	}, [attributes.url, setAttributes, product_image])
+			message: message || attributes.message || 'Your message go here'
+		})
+	}, [image, message, setAttributes]);
+	
+	useEffect(() => {
+		window.timeoutRenderBlocks = setTimeout(() => {
+			replaceInnerBlocks(clientId, createBlocksFromInnerBlocksTemplate(template));
+			window.timeoutRenderBlocks = false;
+		}, 1000)
+		return () => !!window.timeoutRenderBlocks && clearTimeout(window.timeoutRenderBlocks );
+	}, [clientId, template])
 
 	return (
 		<>
@@ -92,15 +100,26 @@ const Edit = ({ image, clientId, attributes, setAttributes}) => {
 export default withSelect( ( select, blockData ) => {
 	const blocks = select( 'core/block-editor' ).getBlocks( blockData.clientId );
 	let image = '';
-	if ( blocks.length > 0 ) {
-		// Just get innerBlock data
-		blocks[0].innerBlocks.forEach(block => {
-			if ( block.name === 'core/image') {
-				image = block.attributes.url
+	let message = '';
+	const getBlockValue = (block, name, field) => {
+		let value = false;
+		block.innerBlocks.forEach(child => {
+			if ( value ) return; // Skip
+			if ( child.name === name ) {
+				value = child.attributes[field];
+			} else if ( !!child.innerBlocks && child.innerBlocks.length > 0 ) {
+				value = getBlockValue(child, name, field)
 			}
 		})
+		return value;
+	}
+	if ( blocks.length > 0 ) {
+		// Just get innerBlock data
+		image = getBlockValue(blocks[0], 'core/image', 'url');
+		message = getBlockValue(blocks[0], 'core/navigation-link', 'label')
 	}
 	return {
-		image: image
+		image,
+		message
 	};
 } )(Edit);

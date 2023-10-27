@@ -11,12 +11,14 @@
                     "bottom": "12px",
                     "left": "12px",
                     "right": "12px"
-                }
+                },
+                "blockGap": "12px"
             },
             "border": {
                 "radius": "12px"
             }
         },
+        "backgroundColor": "base",
         "lock": "all"
     }, [
         ["core/image" , {
@@ -25,11 +27,14 @@
             "href": "{{link}}",
             "linkTarget": "_blank",
             "rel": "noreferrer",
+            "aspectRatio": "0.75",
+            "object-fit": "cover",
             "style": {
                 "border": {
                     "radius": "12px"
                 }
-            }
+            },
+            "scale": "cover"
         }],
         ["core/group", {
             "layout": { 
@@ -58,9 +63,16 @@
                     "justifyContent": "right"
                 }
             }, [
+                
                 ["core/button", { 
                     "text": "xem",
-                    "url": "{{link}}"
+                    "url": "{{link}}",
+                    "fontSize": "small",
+                    "style": {
+                        "border": {
+                            "radius": "4px"
+                        }
+                    }
                 }]
             ]]
         ]]

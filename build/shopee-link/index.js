@@ -44,6 +44,7 @@ const getTemplate = ({
 };
 const Edit = ({
   image,
+  message,
   clientId,
   attributes,
   setAttributes
@@ -74,18 +75,24 @@ const Edit = ({
       window.updateBlockTimeout = false;
     }, 600);
   };
-  const product_image = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useMemo)(() => image || attributes.image || 'http://placehold.it/80x100?text=img', [image, attributes.image]);
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useEffect)(() => {
+  const template = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useMemo)(() => {
     setAttributes({
-      image: image
+      image,
+      message
     });
-    const template = getTemplate({
-      image: product_image,
+    return getTemplate({
+      image: image || attributes.image || 'http://placehold.it/80x100?text=img',
       link: attributes.url,
-      message: attributes.message || 'Your message go here'
+      message: message || attributes.message || 'Your message go here'
     });
-    replaceInnerBlocks(clientId, (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.createBlocksFromInnerBlocksTemplate)(template));
-  }, [attributes.url, setAttributes, product_image]);
+  }, [image, message, setAttributes]);
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useEffect)(() => {
+    window.timeoutRenderBlocks = setTimeout(() => {
+      replaceInnerBlocks(clientId, (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.createBlocksFromInnerBlocksTemplate)(template));
+      window.timeoutRenderBlocks = false;
+    }, 1000);
+    return () => !!window.timeoutRenderBlocks && clearTimeout(window.timeoutRenderBlocks);
+  }, [clientId, template]);
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InspectorControls, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.PanelBody, {
     title: 'Settings'
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalInputControl, {
@@ -101,16 +108,27 @@ const Edit = ({
 /* harmony default export */ __webpack_exports__["default"] = ((0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.withSelect)((select, blockData) => {
   const blocks = select('core/block-editor').getBlocks(blockData.clientId);
   let image = '';
-  if (blocks.length > 0) {
-    // Just get innerBlock data
-    blocks[0].innerBlocks.forEach(block => {
-      if (block.name === 'core/image') {
-        image = block.attributes.url;
+  let message = '';
+  const getBlockValue = (block, name, field) => {
+    let value = false;
+    block.innerBlocks.forEach(child => {
+      if (value) return; // Skip
+      if (child.name === name) {
+        value = child.attributes[field];
+      } else if (!!child.innerBlocks && child.innerBlocks.length > 0) {
+        value = getBlockValue(child, name, field);
       }
     });
+    return value;
+  };
+  if (blocks.length > 0) {
+    // Just get innerBlock data
+    image = getBlockValue(blocks[0], 'core/image', 'url');
+    message = getBlockValue(blocks[0], 'core/navigation-link', 'label');
   }
   return {
-    image: image
+    image,
+    message
   };
 })(Edit));
 
@@ -192,7 +210,7 @@ module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json
   \***************************************/
 /***/ (function(module) {
 
-module.exports = JSON.parse('[["core/group",{"layout":{"type":"flex","allowSizingOnChildren":true},"style":{"spacing":{"padding":{"top":"12px","bottom":"12px","left":"12px","right":"12px"}},"border":{"radius":"12px"}},"lock":"all"},[["core/image",{"url":"{{image}}","width":"80px","href":"{{link}}","linkTarget":"_blank","rel":"noreferrer","style":{"border":{"radius":"12px"}}}],["core/group",{"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"wrap","allowSizingOnChildren":true},"style":{"layout":{"selfStretch":"fill"}}},[["core/navigation-link",{"url":"{{link}}","linkTarget":"_blank","label":"{{message}}","rel":"noreferrer","title":"{{message}}"}],["core/buttons",{"layout":{"type":"flex","justifyContent":"right"}},[["core/button",{"text":"xem","url":"{{link}}"}]]]]]]]]');
+module.exports = JSON.parse('[["core/group",{"layout":{"type":"flex","allowSizingOnChildren":true},"style":{"spacing":{"padding":{"top":"12px","bottom":"12px","left":"12px","right":"12px"},"blockGap":"12px"},"border":{"radius":"12px"}},"backgroundColor":"base","lock":"all"},[["core/image",{"url":"{{image}}","width":"80px","href":"{{link}}","linkTarget":"_blank","rel":"noreferrer","aspectRatio":"0.75","object-fit":"cover","style":{"border":{"radius":"12px"}},"scale":"cover"}],["core/group",{"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"wrap","allowSizingOnChildren":true},"style":{"layout":{"selfStretch":"fill"}}},[["core/navigation-link",{"url":"{{link}}","linkTarget":"_blank","label":"{{message}}","rel":"noreferrer","title":"{{message}}"}],["core/buttons",{"layout":{"type":"flex","justifyContent":"right"}},[["core/button",{"text":"xem","url":"{{link}}","fontSize":"small","style":{"border":{"radius":"4px"}}}]]]]]]]]');
 
 /***/ })
 
