@@ -1,9 +1,9 @@
-<!-- wp:group {"lock":"all","style":{"spacing":{"padding":{"top":"12px","bottom":"12px","left":"12px","right":"12px"}, "blockGap":"12px"},"border":{"radius":"12px"}},"backgroundColor":"base","layout":{"type":"flex","allowSizingOnChildren":true}} -->
-<div class="wp-block-group" style="border-radius:12px;padding-top:12px;padding-right:12px;padding-bottom:12px;padding-left:12px">
+<!-- wp:group {"lock":"all","style":{"spacing":{"padding":{"top":"12px","bottom":"12px","left":"12px","right":"12px"},"blockGap":"12px"},"border":{"radius":"12px"}},"backgroundColor":"var(--wc-green)","layout":{"type":"flex","allowSizingOnChildren":true}} -->
+<div class="wp-block-group has-base-background-color" style="border-radius:12px;padding-top:12px;padding-right:12px;padding-bottom:12px;padding-left:12px">
     <!-- wp:image {"width":"80px","height":"auto","aspectRatio":"0.75","scale":"cover","style":{"border":{"radius":"12px"}}} -->
     <figure class="wp-block-image is-resized has-custom-border">
         <a href="<?php echo $args['url']; ?>" target="_blank" rel="noreferrer">
-            <img src="<?php echo $args['image'] ?>" alt="" style="border-radius:12px;aspect-ratio:1;width:80px;height:auto"/>
+            <img src="<?php echo $args['image'] ?>" alt="" style="border-radius:12px;aspect-ratio:0.75;object-fit:cover;width:80px;height:auto"/>
         </a>
     </figure> <!-- /wp:image -->
 
