@@ -85,7 +85,7 @@ const Edit = ({
       link: attributes.url,
       message: message || attributes.message || 'Your message go here'
     });
-  }, [image, message, setAttributes]);
+  }, [image, message, attributes.url, setAttributes]);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useEffect)(() => {
     window.timeoutRenderBlocks = setTimeout(() => {
       replaceInnerBlocks(clientId, (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.createBlocksFromInnerBlocksTemplate)(template));

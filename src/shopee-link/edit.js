@@ -66,7 +66,7 @@ const Edit = ({ image, message, clientId, attributes, setAttributes}) => {
 			link: attributes.url,
 			message: message || attributes.message || 'Your message go here'
 		})
-	}, [image, message, setAttributes]);
+	}, [image, message, attributes.url, setAttributes]);
 	
 	useEffect(() => {
 		window.timeoutRenderBlocks = setTimeout(() => {
