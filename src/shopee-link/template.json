@@ -45,9 +45,12 @@
                 }
             }
         }, [
-            ["core/paragraph", { 
-                "content": "<a href=\"{{link}}\" target=\"_blank\" rel=\"noreferrer\" >{{message}}</a>",
-                "align": "left" 
+            ["core/navigation-link", {
+                "url": "{{link}}",
+                "linkTarget": "_blank",
+                "label": "{{message}}",
+                "rel": "noreferrer",
+                "title": "{{message}}"
             }],
             ["core/buttons", {
                 "layout": {
