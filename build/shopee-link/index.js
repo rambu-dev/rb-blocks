@@ -20,11 +20,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
-/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _template_json__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./template.json */ "./src/shopee-link/template.json");
+/* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/url */ "@wordpress/url");
+/* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_url__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
+/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _template_json__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./template.json */ "./src/shopee-link/template.json");
+
 
 
 
@@ -38,7 +41,7 @@ const getTemplate = ({
   link = '',
   message = ''
 }) => {
-  let templateString = JSON.stringify(_template_json__WEBPACK_IMPORTED_MODULE_6__);
+  let templateString = JSON.stringify(_template_json__WEBPACK_IMPORTED_MODULE_7__);
   templateString = templateString.replaceAll('{{link}}', link).replaceAll('{{message}}', message).replaceAll('{{image}}', image);
   return JSON.parse(templateString);
 };
@@ -75,7 +78,7 @@ const Edit = ({
       window.updateBlockTimeout = false;
     }, 600);
   };
-  const template = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useMemo)(() => {
+  const template = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_6__.useMemo)(() => {
     setAttributes({
       image,
       message
@@ -86,9 +89,9 @@ const Edit = ({
       message: message || attributes.message || 'Your message go here'
     });
   }, [image, message, attributes.url, setAttributes]);
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useEffect)(() => {
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_6__.useEffect)(() => {
     window.timeoutRenderBlocks = setTimeout(() => {
-      replaceInnerBlocks(clientId, (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.createBlocksFromInnerBlocksTemplate)(template));
+      replaceInnerBlocks(clientId, (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlocksFromInnerBlocksTemplate)(template));
       window.timeoutRenderBlocks = false;
     }, 1000);
     return () => !!window.timeoutRenderBlocks && clearTimeout(window.timeoutRenderBlocks);
@@ -102,6 +105,7 @@ const Edit = ({
   }))), !!attributes.url && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     ...blockProps
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    ref: usePasteHandler(),
     ...innerBlocksProps
   })));
 };
@@ -194,6 +198,16 @@ module.exports = window["wp"]["element"];
 
 /***/ }),
 
+/***/ "@wordpress/url":
+/*!*****************************!*\
+  !*** external ["wp","url"] ***!
+  \*****************************/
+/***/ (function(module) {
+
+module.exports = window["wp"]["url"];
+
+/***/ }),
+
 /***/ "./src/shopee-link/block.json":
 /*!************************************!*\
   !*** ./src/shopee-link/block.json ***!
@@ -210,7 +224,7 @@ module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json
   \***************************************/
 /***/ (function(module) {
 
-module.exports = JSON.parse('[["core/group",{"layout":{"type":"flex","allowSizingOnChildren":true},"style":{"spacing":{"padding":{"top":"12px","bottom":"12px","left":"12px","right":"12px"},"blockGap":"12px"},"border":{"radius":"12px"}},"backgroundColor":"base","lock":"all"},[["core/image",{"url":"{{image}}","width":"80px","href":"{{link}}","linkTarget":"_blank","rel":"noreferrer","aspectRatio":"0.75","object-fit":"cover","style":{"border":{"radius":"12px"}},"scale":"cover"}],["core/group",{"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"wrap","allowSizingOnChildren":true},"style":{"layout":{"selfStretch":"fill"}}},[["core/navigation-link",{"url":"{{link}}","linkTarget":"_blank","label":"{{message}}","rel":"noreferrer","title":"{{message}}"}],["core/buttons",{"layout":{"type":"flex","justifyContent":"right"}},[["core/button",{"text":"xem","url":"{{link}}","fontSize":"small","style":{"border":{"radius":"4px"}}}]]]]]]]]');
+module.exports = JSON.parse('[["core/group",{"layout":{"type":"flex","verticalAlignment":"stretch","allowSizingOnChildren":true},"style":{"spacing":{"padding":{"top":"12px","bottom":"12px","left":"12px","right":"12px"},"blockGap":"12px"},"border":{"radius":"12px"},"alignItems":"stretch"},"backgroundColor":"base","lock":"all","allowedBlocks":["core/image","core/group","core/button","core/buttons","core/navigation-link"]},[["core/image",{"url":"{{image}}","width":"80px","href":"{{link}}","linkTarget":"_blank","rel":"noreferrer","aspectRatio":"0.75","object-fit":"cover","style":{"border":{"radius":"12px"}},"scale":"cover"}],["core/group",{"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"wrap","allowSizingOnChildren":true,"verticalAlignment":"space-between"},"style":{"layout":{"selfStretch":"fill"}}},[["core/navigation-link",{"url":"{{link}}","linkTarget":"_blank","label":"{{message}}","rel":"noreferrer","title":"{{message}}"}],["core/buttons",{"layout":{"type":"flex","justifyContent":"right"}},[["core/button",{"text":"xem","url":"{{link}}","fontSize":"small","style":{"border":{"radius":"4px"}}}]]]]]]]]');
 
 /***/ })
 

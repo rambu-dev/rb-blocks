@@ -2,6 +2,7 @@
     ["core/group", {
         "layout": { 
             "type": "flex",
+            "verticalAlignment": "stretch",
             "allowSizingOnChildren": true
         },
         "style": {
@@ -16,10 +17,12 @@
             },
             "border": {
                 "radius": "12px"
-            }
+            },
+            "alignItems": "stretch"
         },
         "backgroundColor": "base",
-        "lock": "all"
+        "lock": "all",
+        "allowedBlocks": [ "core/image", "core/group", "core/button", "core/buttons", "core/navigation-link"]
     }, [
         ["core/image" , {
             "url": "{{image}}",
@@ -42,7 +45,8 @@
                 "orientation": "vertical",
                 "justifyContent": "stretch",
                 "flexWrap": "wrap",
-                "allowSizingOnChildren": true
+                "allowSizingOnChildren": true,
+                "verticalAlignment": "space-between"
             },
             "style": {
                 "layout": {

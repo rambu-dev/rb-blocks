@@ -5,7 +5,6 @@ import {
 	withSelect,
 	useDispatch 
 } from '@wordpress/data';
-
 import { 
 	InnerBlocks, 
 	InspectorControls,
@@ -13,6 +12,7 @@ import {
 	useInnerBlocksProps,
 	store
 } from '@wordpress/block-editor';
+import { isURL } from '@wordpress/url';
 import { createBlocksFromInnerBlocksTemplate } from '@wordpress/blocks';
  
 import { 
@@ -21,7 +21,10 @@ import {
 	__experimentalHStack as HStack,
 	__experimentalText as Text,
 } from '@wordpress/components';
-import { useCallback, useEffect, useMemo, useState } from '@wordpress/element';
+import { 
+	useEffect, 
+	useMemo
+} from '@wordpress/element';
 
 import defaultTemplate from './template.json';
 
@@ -68,6 +71,7 @@ const Edit = ({ image, message, clientId, attributes, setAttributes}) => {
 		})
 	}, [image, message, attributes.url, setAttributes]);
 	
+	
 	useEffect(() => {
 		window.timeoutRenderBlocks = setTimeout(() => {
 			replaceInnerBlocks(clientId, createBlocksFromInnerBlocksTemplate(template));
@@ -75,6 +79,7 @@ const Edit = ({ image, message, clientId, attributes, setAttributes}) => {
 		}, 1000)
 		return () => !!window.timeoutRenderBlocks && clearTimeout(window.timeoutRenderBlocks );
 	}, [clientId, template])
+
 
 	return (
 		<>
@@ -90,7 +95,7 @@ const Edit = ({ image, message, clientId, attributes, setAttributes}) => {
 				</InspectorControls>
 				{!!attributes.url && 
 					<div {...blockProps}>
-						<div {...innerBlocksProps} />
+						<div ref={usePasteHandler()} {...innerBlocksProps} />
 					</div>	
 				}
 		</>

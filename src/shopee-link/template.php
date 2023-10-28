@@ -1,4 +1,4 @@
-<!-- wp:group {"lock":"all","style":{"spacing":{"padding":{"top":"12px","bottom":"12px","left":"12px","right":"12px"},"blockGap":"12px"},"border":{"radius":"12px"}},"backgroundColor":"var(--wc-green)","layout":{"type":"flex","allowSizingOnChildren":true}} -->
+<!-- wp:group {"lock":"all","style":{"spacing":{"padding":{"top":"12px","bottom":"12px","left":"12px","right":"12px"},"blockGap":"12px"},"border":{"radius":"12px"}},"backgroundColor":"var(--wc-green)","layout":{"type":"flex","allowSizingOnChildren":true, "verticalAlignment":"stretch"}} -->
 <div class="wp-block-group has-base-background-color" style="border-radius:12px;padding-top:12px;padding-right:12px;padding-bottom:12px;padding-left:12px">
     <!-- wp:image {"width":"80px","height":"auto","aspectRatio":"0.75","scale":"cover","style":{"border":{"radius":"12px"}}} -->
     <figure class="wp-block-image is-resized has-custom-border">
@@ -7,7 +7,7 @@
         </a>
     </figure> <!-- /wp:image -->
 
-    <!-- wp:group {"style":{"layout":{"selfStretch":"fill"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"wrap","allowSizingOnChildren":true}} -->
+    <!-- wp:group {"style":{"layout":{"selfStretch":"fill"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"wrap","allowSizingOnChildren":true,"verticalAlignment":"space-between"}}} -->
     <div class="wp-block-group">
         <!-- wp:paragraph {"align":"left"} -->
         <p class="has-text-align-left"><a href="<?php echo $args['url'] ?>" target="_blank" rel="noreferrer"><?php echo isset($args['message']) ? $args['message'] : 'Your message go here'; ?></a></p>
