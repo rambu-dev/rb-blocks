@@ -4,9 +4,7 @@ add_action( 'rest_api_init', function () {
     register_rest_route( 'rb-blocks/v1', 'shopee', array(
         'methods' => 'GET',
         'callback' => 'rb_api_get_shopee_link_detail',
-        'permission_callback' => function () {
-            return current_user_can( 'edit_posts' );
-        }
+        'permission_callback' => "__return_true"
     ) );
 } );
 
@@ -50,8 +48,10 @@ function rb_api_get_shopee_link_detail(WP_REST_Request $request) {
     }
     $product_data = [];
 
-    preg_match("/i\.(\d+)\.(\d+)/", $product_link, $matches);
-    if( count($matches) > 0 ) {
+    $pattern1 = '/i\.(\d+)\.(\d+)/';
+    $pattern2 = '/product\/(\d+)\/(\d+)/';
+
+    if (preg_match($pattern1, $product_link, $matches) || preg_match($pattern2, $product_link, $matches)) {
         $shop_id = $matches[1];
         $item_id = $matches[2];
         $ratings_url = "https://shopee.vn/api/v2/item/get_ratings?filter=0&flag=1&itemid=$item_id&limit=20&offset=0&shopid=$shop_id&type=0";
