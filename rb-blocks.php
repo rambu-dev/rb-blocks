@@ -10,6 +10,8 @@
  */
 defined( 'ABSPATH' ) || exit;
 
+require_once plugin_dir_path(__FILE__) . 'api/shopee.php';
+
 function rb_guternberg_blocks() {
     $plugin_dir_path = plugin_dir_path(__FILE__);
     $plugins = [

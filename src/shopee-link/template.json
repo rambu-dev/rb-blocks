@@ -2,7 +2,9 @@
     ["core/group", {
         "layout": { 
             "type": "flex",
-            "verticalAlignment": "stretch",
+            "orientation": "horizontal",
+            "justifyContent": "stretch",
+            "flexWrap": "nowrap",
             "allowSizingOnChildren": true
         },
         "style": {

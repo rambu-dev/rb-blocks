@@ -28,82 +28,18 @@ import {
 
 import defaultTemplate from './template.json';
 
-export const getTemplate = ({ image = '', link = '', message = ''}) => {
+export const getTemplate = ({ image = 'http://placehold.it/80x100?text=img', url = '', message = 'Your message go here'}) => {
 	let templateString = JSON.stringify(defaultTemplate);
 	templateString = templateString
-		.replaceAll('{{link}}', link)
+		.replaceAll('{{link}}', url)
 		.replaceAll('{{message}}', message)
 		.replaceAll('{{image}}', image);
 
 	return JSON.parse(templateString);
 }
 
-const Edit = ({ image, message, clientId, attributes, setAttributes}) => {
-	const { replaceInnerBlocks } = useDispatch( store );
-	const blockProps = useBlockProps();
-	const innerBlocksProps = useInnerBlocksProps(blockProps)
-
-	const updateBlockAttrs = ({ url }) => {
-		let link = '';
-		var isValid = url.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
-		if ( !!url && isValid !== null ) {
-			link = url;
-		}
-		setAttributes({ url: link });
-	}
-	const changeHandle = (newValue = '') => {
-		if ( !!window.updateBlockTimeout ) clearTimeout(window.updateBlockTimeout)
-		window.updateBlockTimeout = setTimeout(() => {
-			updateBlockAttrs({ url: newValue });
-			window.updateBlockTimeout = false;
-		}, 600);
-	}
-	
-	const template = useMemo(() => {
-		setAttributes({
-			image,
-			message
-		})
-		return getTemplate({
-			image: image || attributes.image || 'http://placehold.it/80x100?text=img',
-			link: attributes.url,
-			message: message || attributes.message || 'Your message go here'
-		})
-	}, [image, message, attributes.url, setAttributes]);
-	
-	
-	useEffect(() => {
-		window.timeoutRenderBlocks = setTimeout(() => {
-			replaceInnerBlocks(clientId, createBlocksFromInnerBlocksTemplate(template));
-			window.timeoutRenderBlocks = false;
-		}, 1000)
-		return () => !!window.timeoutRenderBlocks && clearTimeout(window.timeoutRenderBlocks );
-	}, [clientId, template])
-
-
-	return (
-		<>
-				<InspectorControls>
-					<PanelBody title={ 'Settings' }>
-						<InputControl
-							label={"Product Link"}
-							value={attributes.url}
-							onChange={changeHandle}
-						/>
-					</PanelBody>
-					
-				</InspectorControls>
-				{!!attributes.url && 
-					<div {...blockProps}>
-						<div {...innerBlocksProps} />
-					</div>	
-				}
-		</>
-	)
-}
-
-export default withSelect( ( select, blockData ) => {
-	const blocks = select( 'core/block-editor' ).getBlocks( blockData.clientId );
+const ChildBlocks = withSelect(( select, ownProps ) => {
+	const blocks = select( 'core/block-editor' ).getBlocks( ownProps.clientId );
 	let image = '';
 	let message = '';
 	const getBlockValue = (block, name, field) => {
@@ -127,4 +63,84 @@ export default withSelect( ( select, blockData ) => {
 		image,
 		message
 	};
-} )(Edit);
+} )(({ attributes, clientId, onChange, image, message }) => {
+	
+	useEffect(() => {
+		if ( !image || !message ) return;
+		if ( typeof onChange === 'function' && (image != attributes.image || message != attributes.message) ) {
+			onChange({ image, message });
+		}
+	}, [image, message])
+
+	return (
+		<>
+			<InnerBlocks template={getTemplate(attributes)} />
+		</>
+	)
+});
+
+
+const Edit = ({ clientId, attributes, setAttributes}) => {
+	const { replaceInnerBlocks } = useDispatch( store );
+
+	const updateBlockAttrs = async ({ url }) => {
+		let attrs = {}
+		if ( isURL(url) ) {
+			const response = await fetch(
+				window.wpApiSettings.root + 'rb-blocks/v1/shopee?link=' + url,
+				{ headers: { 'X-WP-Nonce': wpApiSettings.nonce } }) 
+				.then(data => data.json());
+			if ( response.status === 'success' ) {
+				if ( !!response?.data?.name ) {
+					attrs.message = response.data.name;
+				}
+				if ( !!response?.data?.images ) {
+					attrs.image = response?.data?.images[0];
+				}
+			}
+			attrs.url = url;
+		}
+
+		// Rerender blocks
+		!!window.timeoutRenderBlocks && clearTimeout(window.timeoutRenderBlocks);
+		window.timeoutRenderBlocks = setTimeout(() => {
+			setAttributes(attrs)
+			replaceInnerBlocks(
+				clientId, 
+				createBlocksFromInnerBlocksTemplate(getTemplate({
+					...attributes,
+					...attrs
+				}))
+			);
+			window.timeoutRenderBlocks = false;
+		}, 1000);
+	}
+	const changeHandle = (newValue = '') => {
+		updateBlockAttrs({ url: newValue });	
+	}
+	
+	return (
+		<>
+				<InspectorControls>
+					<PanelBody title={ 'Settings' }>
+						<InputControl
+							label={"Product Link"}
+							value={attributes.url}
+							onChange={changeHandle}
+						/>
+					</PanelBody>
+					
+				</InspectorControls>
+				{!!attributes.url && 
+					<ChildBlocks 
+						clientId={clientId} 
+						attributes={attributes} 
+						onChange={( attrs ) => {
+							setAttributes(attrs);
+						}}
+					/> }
+		</>
+	)
+}
+
+export default Edit;
