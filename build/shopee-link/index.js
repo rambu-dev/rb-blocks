@@ -105,7 +105,6 @@ const Edit = ({
   }))), !!attributes.url && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     ...blockProps
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    ref: usePasteHandler(),
     ...innerBlocksProps
   })));
 };

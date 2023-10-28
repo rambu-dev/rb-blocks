@@ -95,7 +95,7 @@ const Edit = ({ image, message, clientId, attributes, setAttributes}) => {
 				</InspectorControls>
 				{!!attributes.url && 
 					<div {...blockProps}>
-						<div ref={usePasteHandler()} {...innerBlocksProps} />
+						<div {...innerBlocksProps} />
 					</div>	
 				}
 		</>
