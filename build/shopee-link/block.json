@@ -12,16 +12,16 @@
   },
   "attributes": {
     "url": {
-      "type": "string",
-      "selector": "product-link"
+      "type": "string"
     },
     "image": {
-      "type": "string",
-      "selector": "product-thumbnail"
+      "type": "string"
     },
     "message": {
-      "type": "string",
-      "selector": "product-description"
+      "type": "string"
+    },
+    "variations": {
+      "type": "array"
     }
   },
   "textdomain": "rb-blocks",

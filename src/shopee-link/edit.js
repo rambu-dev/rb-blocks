@@ -16,6 +16,7 @@ import { isURL } from '@wordpress/url';
 import { createBlocksFromInnerBlocksTemplate } from '@wordpress/blocks';
  
 import { 
+	SelectControl,
 	__experimentalInputControl as InputControl,
 	__experimentalVStack as VStack,
 	__experimentalHStack as HStack,
@@ -23,16 +24,27 @@ import {
 } from '@wordpress/components';
 import { 
 	useEffect, 
-	useMemo
+	useMemo,
+	useState
 } from '@wordpress/element';
 
 import defaultTemplate from './template.json';
 
-export const getTemplate = ({ image = 'http://placehold.it/80x100?text=img', url = '', message = 'Your message go here'}) => {
+export const getTemplate = ({ image = 'http://placehold.it/80x100?text=img', url = '', message = 'Your message go here', variations = false}) => {
 	let templateString = JSON.stringify(defaultTemplate);
+
+	let title = message;
+	if ( variations && variations.length > 0 ) {
+		variations[0].options.forEach(item => {
+			if ( !!item.selected ) {
+				title +=	` (${item.name})`
+			}
+		})
+	}	
+
 	templateString = templateString
 		.replaceAll('{{link}}', url)
-		.replaceAll('{{message}}', message)
+		.replaceAll('{{message}}', title)
 		.replaceAll('{{image}}', image);
 
 	return JSON.parse(templateString);
@@ -64,7 +76,7 @@ const ChildBlocks = withSelect(( select, ownProps ) => {
 		message
 	};
 } )(({ attributes, clientId, onChange, image, message }) => {
-	
+
 	useEffect(() => {
 		if ( !image || !message ) return;
 		if ( typeof onChange === 'function' && (image != attributes.image || message != attributes.message) ) {
@@ -73,19 +85,18 @@ const ChildBlocks = withSelect(( select, ownProps ) => {
 	}, [image, message])
 
 	return (
-		<>
-			<InnerBlocks template={getTemplate(attributes)} />
-		</>
+		<InnerBlocks template={getTemplate(attributes)} />
 	)
 });
 
 
 const Edit = ({ clientId, attributes, setAttributes}) => {
 	const { replaceInnerBlocks } = useDispatch( store );
+	const [variation, selectVariation] = useState(attributes?.image)
 
-	const updateBlockAttrs = async ({ url }) => {
-		let attrs = {}
-		if ( isURL(url) ) {
+	const updateBlockAttrs = async (attrs) => {
+		const { url = false } = attrs
+		if ( !!url && isURL(url) ) {
 			const response = await fetch(
 				window.wpApiSettings.root + 'rb-blocks/v1/shopee?link=' + url,
 				{ headers: { 'X-WP-Nonce': wpApiSettings.nonce } }) 
@@ -96,6 +107,9 @@ const Edit = ({ clientId, attributes, setAttributes}) => {
 				}
 				if ( !!response?.data?.images ) {
 					attrs.image = response?.data?.images[0];
+				}
+				if ( !!response?.data?.variations ) {
+					attrs.variations = response?.data?.variations;
 				}
 			}
 			attrs.url = url;
@@ -118,7 +132,6 @@ const Edit = ({ clientId, attributes, setAttributes}) => {
 	const changeHandle = (newValue = '') => {
 		updateBlockAttrs({ url: newValue });	
 	}
-	
 	return (
 		<>
 				<InspectorControls>
@@ -128,6 +141,27 @@ const Edit = ({ clientId, attributes, setAttributes}) => {
 							value={attributes.url}
 							onChange={changeHandle}
 						/>
+						{!!attributes.variations && <SelectControl
+								label={`Options ${attributes.variations[0].title}`}
+								value={ variation }
+								options={ attributes.variations[0].options.map(item => ({ label: item.name, value: item.image || false }))}
+								onChange={ ( value ) => {
+									if ( isURL(value) ) {
+										selectVariation(value);	
+										attributes.variations[0].options.map(item => {
+											item.selected = item.image === value
+											return item;
+										})
+										console.log(attributes.variations)
+										updateBlockAttrs({ 
+											image: value,
+											variations: attributes.variations
+										});
+									}
+									
+								}}
+								__nextHasNoMarginBottom
+						/>}
 					</PanelBody>
 					
 				</InspectorControls>

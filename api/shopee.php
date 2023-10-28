@@ -4,7 +4,9 @@ add_action( 'rest_api_init', function () {
     register_rest_route( 'rb-blocks/v1', 'shopee', array(
         'methods' => 'GET',
         'callback' => 'rb_api_get_shopee_link_detail',
-        'permission_callback' => "__return_true"
+        'permission_callback' => function() {
+            return current_user_can('edit_posts');
+        }
     ) );
 } );
 
@@ -80,20 +82,30 @@ function rb_api_get_shopee_link_detail(WP_REST_Request $request) {
         if ( !is_wp_error($response) ) {
             $productRequest = json_decode(wp_remote_retrieve_body( $response ));
             $images = [];
+            $options = [];
             $image_url = 'https://down-vn.img.susercontent.com/file/';
             if ( isset($productRequest->data->item->image) ) {
                 $images[] = $image_url . $productRequest->data->item->image;
             }
             if( isset($productRequest->data->item->tier_variations) ) {
                 foreach($productRequest->data->item->tier_variations as $var) {
+                    $variaton = [
+                        "title" => $var->title,
+                        "options" => []
+                    ];
+
                     foreach($var->options as $opt ) {
                         if ( isset($opt->image) && $opt->image ) {
-                            $images[] = $image_url . $opt->image;
+                            $opt->image = $image_url . $opt->image;
+                            $images[] = $opt->image;
                         }
+                        $variaton["options"][] = $opt;
                     }
+                    $options[] = $variaton;
                 }
             }
             $product_data['images'] = $images;
+            $product_data['variations'] = $options;
             if( isset($productRequest->data->item->tracking->name) ) {
                 $product_data['name'] = sanitize_text_field($productRequest->data->item->tracking->name);
             }

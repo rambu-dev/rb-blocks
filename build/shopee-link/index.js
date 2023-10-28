@@ -39,10 +39,19 @@ __webpack_require__.r(__webpack_exports__);
 const getTemplate = ({
   image = 'http://placehold.it/80x100?text=img',
   url = '',
-  message = 'Your message go here'
+  message = 'Your message go here',
+  variations = false
 }) => {
   let templateString = JSON.stringify(_template_json__WEBPACK_IMPORTED_MODULE_7__);
-  templateString = templateString.replaceAll('{{link}}', url).replaceAll('{{message}}', message).replaceAll('{{image}}', image);
+  let title = message;
+  if (variations && variations.length > 0) {
+    variations[0].options.forEach(item => {
+      if (!!item.selected) {
+        title += ` (${item.name})`;
+      }
+    });
+  }
+  templateString = templateString.replaceAll('{{link}}', url).replaceAll('{{message}}', title).replaceAll('{{image}}', image);
   return JSON.parse(templateString);
 };
 const ChildBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.withSelect)((select, ownProps) => {
@@ -86,9 +95,9 @@ const ChildBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.withSelect)(
       });
     }
   }, [image, message]);
-  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks, {
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks, {
     template: getTemplate(attributes)
-  }));
+  });
 });
 const Edit = ({
   clientId,
@@ -98,11 +107,12 @@ const Edit = ({
   const {
     replaceInnerBlocks
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useDispatch)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store);
-  const updateBlockAttrs = async ({
-    url
-  }) => {
-    let attrs = {};
-    if ((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_4__.isURL)(url)) {
+  const [variation, selectVariation] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_6__.useState)(attributes?.image);
+  const updateBlockAttrs = async attrs => {
+    const {
+      url = false
+    } = attrs;
+    if (!!url && (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_4__.isURL)(url)) {
       const response = await fetch(window.wpApiSettings.root + 'rb-blocks/v1/shopee?link=' + url, {
         headers: {
           'X-WP-Nonce': wpApiSettings.nonce
@@ -114,6 +124,9 @@ const Edit = ({
         }
         if (!!response?.data?.images) {
           attrs.image = response?.data?.images[0];
+        }
+        if (!!response?.data?.variations) {
+          attrs.variations = response?.data?.variations;
         }
       }
       attrs.url = url;
@@ -141,6 +154,28 @@ const Edit = ({
     label: "Product Link",
     value: attributes.url,
     onChange: changeHandle
+  }), !!attributes.variations && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.SelectControl, {
+    label: `Options ${attributes.variations[0].title}`,
+    value: variation,
+    options: attributes.variations[0].options.map(item => ({
+      label: item.name,
+      value: item.image || false
+    })),
+    onChange: value => {
+      if ((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_4__.isURL)(value)) {
+        selectVariation(value);
+        attributes.variations[0].options.map(item => {
+          item.selected = item.image === value;
+          return item;
+        });
+        console.log(attributes.variations);
+        updateBlockAttrs({
+          image: value,
+          variations: attributes.variations
+        });
+      }
+    },
+    __nextHasNoMarginBottom: true
   }))), !!attributes.url && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(ChildBlocks, {
     clientId: clientId,
     attributes: attributes,
@@ -229,7 +264,7 @@ module.exports = window["wp"]["url"];
   \************************************/
 /***/ (function(module) {
 
-module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"rb-blocks/shopee-link","version":"0.1.0","title":"RB Embed Shopee Link","category":"common","icon":"smiley","description":"A block to quick share shopee link with auto generate thumbnail and description.","supports":{"html":true},"attributes":{"url":{"type":"string","selector":"product-link"},"image":{"type":"string","selector":"product-thumbnail"},"message":{"type":"string","selector":"product-description"}},"textdomain":"rb-blocks","editorScript":"file:./index.js"}');
+module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"rb-blocks/shopee-link","version":"0.1.0","title":"RB Embed Shopee Link","category":"common","icon":"smiley","description":"A block to quick share shopee link with auto generate thumbnail and description.","supports":{"html":true},"attributes":{"url":{"type":"string"},"image":{"type":"string"},"message":{"type":"string"},"variations":{"type":"array"}},"textdomain":"rb-blocks","editorScript":"file:./index.js"}');
 
 /***/ }),
 
