@@ -141,7 +141,7 @@ const Edit = ({ clientId, attributes, setAttributes}) => {
 							value={attributes.url}
 							onChange={changeHandle}
 						/>
-						{!!attributes.variations && <SelectControl
+						{!!attributes.variations && attributes.variations.length > 0 && <SelectControl
 								label={`Options ${attributes.variations[0].title}`}
 								value={ variation }
 								options={ attributes.variations[0].options.map(item => ({ label: item.name, value: item.image || false }))}
